@@ -2,15 +2,19 @@ package com.wellsfargo.counselor.entity;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
-public class Advisor {
+public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long advisorId;
+    private Long clientId;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "advisor_id", nullable = false)
+    private Advisor advisor;
+
+    @OneToOne(mappedBy = "client")
+    private Portfolio portfolio;
 
     @Column(nullable = false)
     private String firstName;
@@ -27,23 +31,30 @@ public class Advisor {
     @Column(nullable = false)
     private String email;
 
-    @OneToMany(mappedBy = "advisor")
-    private List<Client> clients;
 
-    protected Advisor() { this.clients = new ArrayList<>(); }
-
-    public Advisor(String firstName, String lastName, String address, String phone, String email, List<Client> clients) {
+    public Client(String firstName, String lastName, String address, String phone, String email, Advisor advisor, Portfolio portfolio) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.phone = phone;
         this.email = email;
-        this.clients = (clients == null) ? new ArrayList<>() : clients;
+        this.advisor = advisor;
+        this.portfolio = portfolio;
     }
 
-    public Long getAdvisorId() {
-        return advisorId;
+    protected Client() {
+
     }
+
+    public Long getClientId() { return clientId; }
+
+    public  Advisor getAdvisor() { return advisor;}
+
+    public void setAdvisor(Advisor advisor) { this.advisor = advisor; }
+
+    public Portfolio getPortfolio() { return portfolio; }
+
+    public void setPortfolio(Portfolio portfolio) { this.portfolio = portfolio; }
 
     public String getFirstName() {
         return firstName;
@@ -65,7 +76,9 @@ public class Advisor {
         return address;
     }
 
-    public void setAddress(String address) { this.address = address; }
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
     public String getPhone() {
         return phone;
@@ -83,7 +96,4 @@ public class Advisor {
         this.email = email;
     }
 
-    public List<Client> getClients() { return clients; }
-
-    public void setClients(List<Client> clients){ this.clients = (clients == null) ? new ArrayList<>() : clients; }
 }
